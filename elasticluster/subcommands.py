@@ -35,7 +35,7 @@ from elasticluster.exceptions import ClusterNotFound, ConfigurationError, \
 
 def ask_confirmation(msg):
     """Ask for confirmation. Returns True or False accordingly"""
-    yesno = raw_input(msg + " [yN] ")
+    yesno = input(msg + " [yN] ")
     if yesno.lower() not in ['yes', 'y']:
         print("Aborting as per user request.")
         return False
@@ -173,7 +173,7 @@ class Start(AbstractCommand):
                                         include_config_dirs=True)
 
         # overwrite configuration
-        for option, value in self.params.extra_conf.iteritems():
+        for option, value in self.params.extra_conf.items():
             cconf = configurator.cluster_conf[cluster_template]['cluster']
             if option in cconf:
                 cconf[option] = value
@@ -190,13 +190,14 @@ class Start(AbstractCommand):
                 return
 
         try:
+
             for cls in cluster.nodes:
                 print("Starting cluster `%s` with %d %s nodes." % (
                     cluster.name, len(cluster.nodes[cls]), cls))
             print("(this may take a while...)")
             conf = configurator.cluster_conf[cluster_template]
             min_nodes = dict(
-                (k[:-10], int(v)) for k, v in conf['cluster'].iteritems() if
+                (k[:-10], int(v)) for k, v in conf['cluster'].items() if
                 k.endswith('_nodes_min'))
             cluster.start(min_nodes=min_nodes)
             if self.params.no_setup:
@@ -255,7 +256,7 @@ class Stop(AbstractCommand):
 
         if not self.params.yes:
             # Ask for confirmation
-            yesno = raw_input(
+            yesno = input(
                 "Do you want really want to stop "
                 "cluster %s? [yN] " % cluster_name)
             if yesno.lower() not in ['yes', 'y']:
@@ -345,9 +346,9 @@ class ResizeCluster(AbstractCommand):
             #       complicated for the user
             if (not grp in cluster.nodes or not cluster.nodes[grp]) \
                     and not template:
-                print "Elasticluster can not infer which template to use for "\
+                print ("Elasticluster can not infer which template to use for "\
                       "the new node(s). Please provide the template with " \
-                      "the `-t` or `--template` option"
+                      "the `-t` or `--template` option")
                 return
 
             if not template:
@@ -392,7 +393,7 @@ class ResizeCluster(AbstractCommand):
 
             if not self.params.yes:
                 # Ask for confirmation.
-                yesno = raw_input(
+                yesno = input(
                     "Do you really want to remove them? [yN] ")
                 if yesno.lower() not in ['yes', 'y']:
                     print("Aborting as per user request.")
@@ -458,7 +459,7 @@ class RemoveNode(AbstractCommand):
         # Run
         if not self.params.yes:
             # Ask for confirmation.
-            yesno = raw_input(
+            yesno = input(
                 "Do you really want to remove node %s? [yN] " % node.name)
             if yesno.lower() not in ['yes', 'y']:
                 print("Aborting as per user request.")

@@ -30,7 +30,7 @@ storagedir = os.path.expanduser('~/.elasticluster/storage')
 def fix_storage_file(path):
     data = json.load(open(path, 'r'))
     if 'nodes' in data:
-        print "Storage file already fixed"
+        print("Storage file already fixed")
         return None
 
     for d in data['frontend']:

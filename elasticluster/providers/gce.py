@@ -147,7 +147,7 @@ class GoogleCloudProvider(AbstractCloudProvider):
                     credentials = run_flow(flow, storage, flags=args)
                 except:
                     import sys
-                    print "Unexpected error:", sys.exc_info()[0]
+                    print("Unexpected error:", sys.exc_info()[0])
                     raise
 
             http = httplib2.Http()
@@ -273,7 +273,7 @@ class GoogleCloudProvider(AbstractCloudProvider):
         if instance_name is None:
             instance_name = 'elasticluster-%s' % uuid.uuid4()
 
-        public_key_content = file(public_key_path).read()
+        public_key_content = open(public_key_path).read()
 
         instance = {
             'name': instance_name,

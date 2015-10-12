@@ -208,7 +208,7 @@ duplication of code.
 
         path = self._get_cluster_storage_path(cluster.name)
         cluster.storage_file = path
-        with open(path, 'wb') as storage:
+        with open(path, 'w') as storage:
             self.dump(cluster, storage)
 
     def delete(self, cluster):
@@ -258,6 +258,7 @@ class JsonRepository(DiskRepository):
 
     def load(self, fp):
         dcluster = json.load(fp)
+        dcluster = dcluster if dcluster else {}
         from elasticluster import Cluster
         cluster = Cluster(**dcluster)
 
@@ -283,6 +284,8 @@ class YamlRepository(DiskRepository):
 
     def load(self, fp):
         dcluster = yaml.load(fp)
+        if not dcluster:
+            raise ClusterNotFound('create a cluster')
         from elasticluster import Cluster
         cluster = Cluster(**dcluster)
 

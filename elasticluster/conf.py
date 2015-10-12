@@ -22,8 +22,9 @@ import os
 import re
 import sys
 
+
 # External modules
-from ConfigParser import RawConfigParser
+from configparser import RawConfigParser
 
 try:
     # Voluptuous version >= 0.8.1
@@ -126,7 +127,7 @@ class Configurator(object):
 
         """
         # FIXME: This is not python3 compatible!
-        if isinstance(configfiles, basestring):
+        if isinstance(configfiles, str):
             configfiles = [configfiles]
         # Also, expand any possible user variable
         configfiles = [os.path.expanduser(cfg) for cfg in configfiles]
@@ -217,10 +218,10 @@ class Configurator(object):
                           **extra)
 
         nodes = dict(
-            (k[:-6], int(v)) for k, v in conf['cluster'].iteritems() if
+            (k[:-6], int(v)) for k, v in conf['cluster'].items() if
             k.endswith('_nodes'))
 
-        for kind, num in nodes.iteritems():
+        for kind, num in nodes.items():
             conf_kind = conf['nodes'][kind]
             extra = conf_kind.copy()
             extra.pop('image_id', None)
@@ -283,7 +284,7 @@ class Configurator(object):
         groups = dict((k[:-7], v.split(',')) for k, v
                       in conf.items() if k.endswith('_groups'))
         environment = dict()
-        for nodekind, grps in groups.iteritems():
+        for nodekind, grps in groups.items():
             if not isinstance(grps, list):
                 groups[nodekind] = [grps]
 
@@ -329,10 +330,10 @@ class ConfigValidator(object):
         * interpolating configuraiton options
         """
         # read cloud provider environment variables (ec2_boto or google, openstack)
-        for cluster, props in self.config.iteritems():
+        for cluster, props in self.config.items():
             if "cloud" in props and "provider" in props['cloud']:
 
-                for param, value in props['cloud'].iteritems():
+                for param, value in props['cloud'].items():
                     PARAM = param.upper()
                     if not value and PARAM in os.environ:
                         props['cloud'][param] = os.environ[PARAM]
@@ -342,7 +343,7 @@ class ConfigValidator(object):
         ansible_pb_dir = os.path.join(
             sys.prefix,
             'share/elasticluster/providers/ansible-playbooks')
-        for cluster, props in self.config.iteritems():
+        for cluster, props in self.config.items():
             if 'setup' in props and 'playbook_path' in props['setup']:
                 if props['setup']['playbook_path'].startswith(
                         "%(ansible_pb_dir)s"):
@@ -357,7 +358,7 @@ class ConfigValidator(object):
         * expanding file paths
         """
         # expand all paths
-        for cluster, values in self.config.iteritems():
+        for cluster, values in self.config.items():
             conf = self.config[cluster]
             if 'playbook_path' in values['setup']:
                 pbpath = os.path.expanduser(values['setup']['playbook_path'])
@@ -459,7 +460,7 @@ class ConfigValidator(object):
         if not self.config:
             raise Invalid("No clusters found in configuration.")
 
-        for cluster, properties in self.config.iteritems():
+        for cluster, properties in self.config.items():
             self.config[cluster] = validator(properties)
 
             if 'provider' not in properties['cloud']:
@@ -481,7 +482,7 @@ class ConfigValidator(object):
                 raise Invalid(
                     "No nodes configured for cluster `%s`" % cluster)
 
-            for node, props in properties['nodes'].iteritems():
+            for node, props in properties['nodes'].items():
                 # check name pattern to conform hostnames
                 match = re.search(r'^[a-zA-Z0-9-]*$', node)
                 if not match:
@@ -604,7 +605,7 @@ class ConfigReader(object):
             'storage_path': Configurator.default_storage_path,
             'storage_type': Configurator.default_storage_type})
 
-        clusters = dict((key, value) for key, value in self.conf.iteritems() if
+        clusters = dict((key, value) for key, value in self.conf.items() if
                         re.search(ConfigReader.cluster_section + "/(.*)", key)
                         and key.count("/") == 1)
 
@@ -679,14 +680,14 @@ class ConfigReader(object):
                              values['cluster'].items() if
                              key.endswith('_nodes'))
                 values['nodes'] = dict()
-                for node in nodes.iterkeys():
+                for node in nodes.keys():
                     node_name = re.search("(.*)_nodes", node).groups()[0]
                     property_name = "%s/%s/%s" % (ConfigReader.cluster_section,
                                                   name, node_name)
                     if property_name in self.conf:
                         node_values = dict(
                             (key, value.strip("'").strip('"')) for key, value
-                            in self.conf[property_name].iteritems())
+                            in self.conf[property_name].items())
                         node_values = dict(
                             values['cluster'].items() + node_values.items())
                         values['nodes'][node_name] = node_values

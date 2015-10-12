@@ -15,6 +15,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 __author__ = 'Nicolas Baer <nicolas.baer@uzh.ch>'
 
 
@@ -23,6 +24,8 @@ import logging
 logging.basicConfig()
 log = logging.getLogger("gc3.elasticluster")
 log.DO_NOT_FORK = False
+
+from elasticluster.conf import Configurator
 
 # API
 from elasticluster.cluster import Cluster
@@ -36,7 +39,7 @@ from elasticluster.providers.gce import GoogleCloudProvider
 def get_configurator(configfiles='~/.elasticluster/config',
                      storage_path=None,
                      include_config_dirs=True):
-    from elasticluster.conf import Configurator
+
     conf = Configurator.fromConfig(configfiles,
                                    storage_path,
                                    include_config_dirs=True)

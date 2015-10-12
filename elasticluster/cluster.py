@@ -26,7 +26,9 @@ import socket
 import sys
 import time
 from multiprocessing.dummy import Pool
-import UserDict
+from functools import reduce
+
+from collections import MutableMapping as DictMixin
 
 # External modules
 import paramiko
@@ -44,7 +46,7 @@ class IgnorePolicy(paramiko.MissingHostKeyPolicy):
                  (key.get_name(), hostname, hexlify(key.get_fingerprint())))
 
 
-class Struct(object, UserDict.DictMixin):
+class Struct(DictMixin, object):
     """
     This class is a clone of gc3libs.utils.Struct class from GC3Pie project: https://code.google.com/p/gc3pie/
 
@@ -185,10 +187,10 @@ class Cluster(Struct):
         self.extra.update(extra.pop('extra',{}))
 
         # Remove extra arguments, if defined
-        for key in extra.keys():
-            if hasattr(self, key):
-                del extra[key]
-        self.extra.update(extra)
+        #for key in extra.keys():
+        #    if hasattr(self, key):
+        #        del extra[key]
+        self.extra.update({ key:value for key,value in extra.items() if not hasattr(self, key)})
 
     @property
     def known_hosts_file(self):
@@ -204,6 +206,16 @@ class Cluster(Struct):
         self._cloud_provider = provider
         for node in self.get_all_nodes():
             node._cloud_provider = provider
+            
+    def __iter__(self):
+        pass
+    
+    def __len__(self):
+        pass
+    
+    def __delitem__(self):
+        
+        pass
 
     def __getstate__(self):
         result = self.__dict__.copy()
@@ -224,7 +236,7 @@ class Cluster(Struct):
 
     def keys(self):
         """Only expose some of the attributes when using as a dictionary"""
-        keys = Struct.keys(self)
+        keys = list(Struct.keys(self))
         for key in ('_setup_provider', '_cloud_provider',
                     'repository', 'known_hosts_file'):
             if key in keys:
@@ -575,10 +587,10 @@ class Cluster(Struct):
         if not min_nodes:
             # the node minimum is implicit if not specified.
             min_nodes = dict((key, len(self.nodes[key])) for key in
-                             self.nodes.iterkeys())
+                             self.nodes.keys())
         else:
             # check that each group has a minimum value
-            for group, nodes in nodes.iteritems():
+            for group, nodes in nodes.items():
                 if group not in min_nodes:
                     min_nodes[group] = len(nodes)
 
@@ -597,7 +609,7 @@ class Cluster(Struct):
         """
         # check the total sizes before moving the nodes around
         minimum_nodes = 0
-        for group, size in min_nodes.iteritems():
+        for group, size in min_nodes.items():
             minimum_nodes = minimum_nodes + size
 
         if len(self.get_all_nodes()) < minimum_nodes:
@@ -611,14 +623,14 @@ class Cluster(Struct):
 
         # finding all node groups with an unsatisfied amount of nodes
         unsatisfied_groups = []
-        for group, size in min_nodes.iteritems():
+        for group, size in min_nodes.items():
             if len(self.nodes[group]) < size:
                 unsatisfied_groups.append(group)
 
         # trying to move nodes around to fill the groups with missing nodes
         for ugroup in unsatisfied_groups[:]:
             missing = min_nodes[ugroup] - len(self.nodes[ugroup])
-            for group, nodes in self.nodes.iteritems():
+            for group, nodes in self.nodes.items():
                 spare = len(self.nodes[group]) - min_nodes[group]
                 while spare > 0 and missing > 0:
                     self.nodes[ugroup].append(self.nodes[group][-1])
@@ -841,7 +853,14 @@ class Node(Struct):
         self.extra = {}
         self.extra.update(extra.pop('extra', {}))
         self.extra.update(extra)
-
+    def __iter__(self):
+        pass
+    
+    def __len__(self):
+        pass
+    
+    def __delitem__(self):
+        pass
 
     def __setstate__(self, state):
         self.__dict__ = state
@@ -992,6 +1011,6 @@ instance flavor: %s""" % (self.name, self.preferred_ip, str.join(', ', self.ips)
 
     def keys(self):
         """Only expose some of the attributes when using as a dictionary"""
-        keys = Struct.keys(self)
+        keys = list(Struct.keys(self))
         keys.remove('_cloud_provider')
         return keys

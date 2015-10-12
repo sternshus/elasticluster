@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-
+#ip install -e git+https://github.com/sternshus/ansible.git#egg=ansible .
 __docformat__ = 'reStructuredText'
 
 import os
@@ -65,7 +65,7 @@ required_packages = [
 ]
 
 if sys.version_info[:2] == (2, 6):
-    # Python 2.6. 
+    # Python 2.6.
     # Google api python client *requires* argparse
     # cfr. http://code.google.com/p/google-api-python-client/issues/detail?id=299
     required_packages.append('argparse')
@@ -92,9 +92,9 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Operating System :: POSIX :: Other",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
         "Topic :: System :: Clustering",
         "Topic :: Education",
         "Topic :: Scientific/Engineering",
@@ -104,6 +104,7 @@ setup(
     install_requires=required_packages,
     tests_require=['tox', 'mock', 'nose'],
     data_files=ansible_pb_files(),
+
     entry_points={
         'console_scripts': [
             'elasticluster = elasticluster.main:main',
