@@ -263,7 +263,7 @@ class GoogleCloudProvider(AbstractCloudProvider):
             elif image_id.startswith('ubuntu-'):
               os_cloud = 'ubuntu-os-cloud'
             elif image_id.startswith('ipython-') or image_id.startswith('jupyter-'):
-              os_cloud = ''
+              os_cloud = self._project_id
             else:
               os = image_id.split("-")[0]
               os_cloud = "%s-cloud" % os
