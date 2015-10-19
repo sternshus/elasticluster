@@ -262,6 +262,8 @@ class GoogleCloudProvider(AbstractCloudProvider):
               os_cloud = 'debian-cloud'
             elif image_id.startswith('ubuntu-'):
               os_cloud = 'ubuntu-os-cloud'
+            elif image_id.startswith('ipython-') or image_id.startswith('jupyter-'):
+              os_cloud = ''
             else:
               os = image_id.split("-")[0]
               os_cloud = "%s-cloud" % os
