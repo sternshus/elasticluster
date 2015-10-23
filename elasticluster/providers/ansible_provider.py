@@ -205,7 +205,7 @@ class AnsibleSetupProvider(AbstractSetupProvider):
             stats=stats,
             become=self._sudo,
             become_user=self._sudo_user,
-            private_key_file=private_key_file,
+            private_key_file=private_key_file
         )
 
         try:
