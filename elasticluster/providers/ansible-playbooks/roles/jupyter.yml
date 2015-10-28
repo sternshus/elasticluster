@@ -1,0 +1,15 @@
+ name: IPython cluster Playbook
+  hosts: ipython_controller:ipython_engine
+  vars_files:
+    - vars/os
+  handlers:
+    #- include: common/handlers/main.yml
+
+  tasks:
+    #- include: common/tasks/ssh_host_based_authentication.yml hosts={{groups.all}}
+    #- include: common/tasks/iptables.yml trusted_hosts={{groups.all}}
+
+    
+
+  handlers:
+    #- include: common/handlers/main.yml
