@@ -39,8 +39,8 @@
       with_items:
         - ipython
         - ipython-cluster-helper
-        - numpy
-        - scipy
+        #- numpy
+        #- scipy
       tags:
         - ipython
 
@@ -79,3 +79,42 @@
 
   handlers:
     - include: common/handlers/main.yml
+
+- name: Set up simple Jupyter Notebook
+  handlers:
+    - include: common/handlers/main.yml
+  hosts: ipython_controller
+  become: False
+  tasks:
+
+    - name: Install Jupyter
+      action: pip name={{item}} use_mirrors=no
+      with_items:
+        - jupyter
+      when: 'inventory_hostname in groups["ipython_controller"]'
+      tags:
+        - ipython
+
+    - name: Deploy self-signed cert for password authentication
+      copy: src=~/mycert.pem dest=~/mycert.pem
+      when: 'inventory_hostname in groups["ipython_controller"]'
+      tags:
+        - ipython
+
+    - name: Make directory for Jupyter configuration file
+      file: path=~/.jupyter state=directory
+      when: 'inventory_hostname in groups["ipython_controller"]'
+      tags:
+        - ipython
+
+    - name: Send Jupyter configuration file
+      action: template src=~/jupyterconfig.py.j2 dest=~/.jupyter/jupyter_notebook_config.py
+      when: 'inventory_hostname in groups["ipython_controller"]'
+      tags:
+        - ipython
+
+    - name: Start Jupyter Notebook
+      command: jupyter notebook
+      when: 'inventory_hostname in groups["ipython_controller"]'
+      tags:
+        - ipython
