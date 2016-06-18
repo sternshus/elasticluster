@@ -71,6 +71,7 @@
     state=started
   become: yes
   become_user: root
+  when: not is_debian_or_ubuntu
   # FIXME: At the moment, enabling `iptables` fails on CentOS7 for
   # reasons I cannot understand... just ignore the error and keep
   # running.
@@ -84,6 +85,7 @@
     state=started
   become: yes
   become_user: root
+  when: not is_debian_or_ubuntu
   # FIXME: At the moment, enabling `iptables` fails on CentOS7 for
   # reasons I cannot understand... just ignore the error and keep
   # running.
