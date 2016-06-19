@@ -90,29 +90,36 @@
   become: False
   tasks:
 
+    - name: Check if Jupyter is already installed
+      stat: path=/usr/local/bin/jupyter
+      register: jupyter_exists
+
     - name: Install Jupyter
       action: pip name={{item}} use_mirrors=no
       with_items:
         - jupyter
-      when: 'inventory_hostname in groups["ipython_controller"]'
+      when: jupyter_exists.stat.exists == False
       tags:
         - ipython
 
     - name: Deploy self-signed cert for password authentication
-      copy: src=~/mycert.pem dest=~/mycert.pem
-      when: 'inventory_hostname in groups["ipython_controller"]'
+      copy: src=~/elasticluster-config/mycert.pem dest=~/mycert.pem
       tags:
         - ipython
 
     - name: Make directory for Jupyter configuration file
       file: path=~/.jupyter state=directory
-      when: 'inventory_hostname in groups["ipython_controller"]'
       tags:
         - ipython
 
     - name: Send Jupyter configuration file
-      action: template src=~/jupyterconfig.py.j2 dest=~/.jupyter/jupyter_notebook_config.py
-      when: 'inventory_hostname in groups["ipython_controller"]'
+      action: template src=~/elasticluster-config/jupyterconfig.py.j2 dest=~/.jupyter/jupyter_notebook_config.py
+      tags:
+        - ipython
+
+    - name: Kill potential existing jupyter process
+      command: pkill jupyter
+      ignore_errors: yes
       tags:
         - ipython
 
@@ -120,6 +127,5 @@
       command: jupyter notebook --config=~/.jupyter/jupyter_notebook_config.py
       async: 99999999999999999999999
       poll: 0
-      when: 'inventory_hostname in groups["ipython_controller"]'
       tags:
         - ipython
