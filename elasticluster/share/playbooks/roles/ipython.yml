@@ -16,6 +16,7 @@
         - python-dev
         - libblas-dev
         - liblapack-dev
+        - libzmq-dev
       tags:
         - ipython
 
@@ -74,6 +75,8 @@
     - name: Create ipython cluster!
       action: shell ipcluster start
       when: 'inventory_hostname in groups["ipython_controller"]'
+      # this always fails if the process is already running
+      ignore_errors: yes
       tags: 
         - ipython
 
@@ -114,7 +117,9 @@
         - ipython
 
     - name: Start Jupyter Notebook
-      command: jupyter notebook
+      command: jupyter notebook --config=~/.jupyter/jupyter_notebook_config.py
+      async: 99999999999999999999999
+      poll: 0
       when: 'inventory_hostname in groups["ipython_controller"]'
       tags:
         - ipython
