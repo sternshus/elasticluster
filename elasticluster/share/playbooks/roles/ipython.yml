@@ -14,11 +14,19 @@
         - gfortran
         - python-pip
         - python-dev
+        - python3-pip
+        - python3-dev
         - libblas-dev
         - liblapack-dev
         - libzmq-dev
       tags:
         - ipython
+
+    - name: Install ZMQ for Python 3
+      action: apt name=libzmq3-dev
+      when: is_debian_or_ubuntu
+      tags:
+        -ipython
 
     - name: Install PIP (CentOS)
       action: yum name={{item}}
@@ -33,13 +41,18 @@
       tags:
         - ipython
 
+    - name: Update PIP
+      action: pip name=pip
+                extra_args='--upgrade'
+
     # Note: use_mirrors=yes (default) does not work with CentOS 6.3
     # Note: ipython[all] does not seem to work.
     - name: Install ipython and commonly used Python packages
-      action: pip name={{item}} use_mirrors=no
+      action: pip name={{item}}
       with_items:
         - ipython
         - ipython-cluster-helper
+        - jupyter
         #- numpy
         #- scipy
       tags:
@@ -49,6 +62,16 @@
       action: shell find /usr/lib/python2.6/site-packages -name  top_level.txt -exec chmod a+r {} \;
       ignore_errors: yes
       when: is_centos
+      tags:
+        - ipython
+
+    - name: Install Python 3 Packages
+      command: 'python3 -m pip install {{item}}'
+      with_items:
+        - ipython
+        - ipykernel
+        - ipyparallel
+      when: 'inventory_hostname in groups["ipython_controller"]'
       tags:
         - ipython
 
@@ -90,15 +113,8 @@
   become: False
   tasks:
 
-    - name: Check if Jupyter is already installed
-      stat: path=/usr/local/bin/jupyter
-      register: jupyter_exists
-
-    - name: Install Jupyter
-      action: pip name={{item}} use_mirrors=no
-      with_items:
-        - jupyter
-      when: jupyter_exists.stat.exists == False
+    - name: Create Python 3 kernel
+      command: 'python3 -m ipykernel install --user'
       tags:
         - ipython
 
@@ -119,6 +135,12 @@
 
     - name: Kill potential existing jupyter process
       command: pkill jupyter
+      ignore_errors: yes
+      tags:
+        - ipython
+
+    - name: Create notebook directory
+      file: path=~/elasticluster state=directory
       ignore_errors: yes
       tags:
         - ipython
