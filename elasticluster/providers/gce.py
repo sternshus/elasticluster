@@ -336,15 +336,15 @@ class GoogleCloudProvider(AbstractCloudProvider):
                 {'email': self._email,
                  'scopes': GCE_DEFAULT_SCOPES
                 }],
-            "metadata": {
-                "kind": "compute#metadata",
-                "items": [
-                    {
-                        "key": "sshKeys",
-                        "value": "%s:%s" % (username, public_key_content)
-                    }
-                ]
-            }
+            # "metadata": {
+            #     "kind": "compute#metadata",
+            #     "items": [
+            #         {
+            #             "key": "sshKeys",
+            #             "value": "%s:%s" % (username, public_key_content)
+            #         }
+            #     ]
+            # }
         }
 
         # create the instance
