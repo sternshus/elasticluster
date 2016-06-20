@@ -6,7 +6,7 @@
   roles:
     - { role: iptables, default_input_policy: 'ACCEPT' }
   tasks:
-    - name: Install PIP (Ubuntu)
+    - name: Install PIP and apt dependencies(Ubuntu)
       action: apt name={{item}}
       when: is_debian_or_ubuntu
       with_items:
@@ -19,11 +19,19 @@
         - libblas-dev
         - liblapack-dev
         - libzmq-dev
+        # - libxml2-dev
+        # - libxslt1-dev
+        # - python-lxml
+        # - python3-lxml
+        # - cython
+        # - cython3
       tags:
         - ipython
 
     - name: Install ZMQ for Python 3
-      action: apt name=libzmq3-dev
+      action: apt name={{item}}
+      with_items:
+        - libzmq3-dev
       when: is_debian_or_ubuntu
       tags:
         -ipython
@@ -53,6 +61,8 @@
         - ipython
         - ipython-cluster-helper
         - jupyter
+        - feedparser
+        # for now, we'll install our fork of arelle manually
         #- numpy
         #- scipy
       tags:
@@ -69,9 +79,10 @@
       command: 'python3 -m pip install {{item}}'
       with_items:
         - ipython
+        - ipython-cluster-helper
+        - jupyter
         - ipykernel
         - ipyparallel
-      when: 'inventory_hostname in groups["ipython_controller"]'
       tags:
         - ipython
 
