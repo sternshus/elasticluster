@@ -55,18 +55,18 @@
 
     # Note: use_mirrors=yes (default) does not work with CentOS 6.3
     # Note: ipython[all] does not seem to work.
-    - name: Install ipython and commonly used Python packages
-      action: pip name={{item}}
-      with_items:
-        - ipython
-        - ipython-cluster-helper
-        - jupyter
-        - feedparser
+    # - name: Install ipython and commonly used Python packages
+    #   action: pip name={{item}}
+    #   with_items:
+    #     - ipython
+    #     - ipython-cluster-helper
+    #     - jupyter
+    #     - feedparser
         # for now, we'll install our fork of arelle manually
         #- numpy
         #- scipy
-      tags:
-        - ipython
+      # tags:
+      #   - ipython
 
     - name: Fix for GCE CentOS images
       action: shell find /usr/lib/python2.6/site-packages -name  top_level.txt -exec chmod a+r {} \;
@@ -83,6 +83,7 @@
         - jupyter
         - ipykernel
         - ipyparallel
+        - feedparser
       tags:
         - ipython
 
@@ -98,12 +99,12 @@
 
     - name: Deploy ipcluster configuration file
       action: template src=ipython/templates/ipcluster_config.py.j2 dest=~/.ipython/profile_default/ipcluster_config.py
-      tags: 
+      tags:
         - ipython
 
     - name: Deploy ipcontroller configuration file
       action: template src=ipython/templates/ipcontroller_config.py.j2 dest=~/.ipython/profile_default/ipcontroller_config.py
-      tags: 
+      tags:
         - ipython
 
     - name: Create ipython cluster!
@@ -111,7 +112,7 @@
       when: 'inventory_hostname in groups["ipython_controller"]'
       # this always fails if the process is already running
       ignore_errors: yes
-      tags: 
+      tags:
         - ipython
 
   handlers:
