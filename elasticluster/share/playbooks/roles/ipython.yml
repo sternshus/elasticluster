@@ -19,10 +19,10 @@
         - libblas-dev
         - liblapack-dev
         - libzmq-dev
-        # - libxml2-dev
-        # - libxslt1-dev
+        - libxml2-dev
+        - libxslt1-dev
         # - python-lxml
-        # - python3-lxml
+        - python3-lxml
         # - cython
         # - cython3
       tags:
@@ -84,6 +84,7 @@
         - ipykernel
         - ipyparallel
         - feedparser
+        - '-e git+https://github.com/sternshus/arelle#egg=arelle'
       tags:
         - ipython
 
