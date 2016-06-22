@@ -85,6 +85,7 @@
         - ipyparallel
         - feedparser
         - '-e git+https://github.com/sternshus/arelle#egg=arelle'
+        - rdflib
       tags:
         - ipython
 
