@@ -58,9 +58,12 @@ GCE_API_VERSION = 'v1'
 GCE_URL = 'https://www.googleapis.com/compute/%s/projects/' % GCE_API_VERSION
 GCE_DEFAULT_ZONE = 'us-central1-a'
 GCE_DEFAULT_SERVICE_EMAIL = 'default'
-GCE_DEFAULT_SCOPES = ['https://www.googleapis.com/auth/devstorage'
-                      '.full_control',
-                      'https://www.googleapis.com/auth/compute']
+# This is the right way to do it.
+# GCE_DEFAULT_SCOPES = ['https://www.googleapis.com/auth/devstorage'
+#                       '.full_control',
+#                       'https://www.googleapis.com/auth/compute']
+# This is the hacky way to do it.
+GCE_DEFAULT_SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 
 
 class GoogleCloudProvider(AbstractCloudProvider):
@@ -95,7 +98,8 @@ class GoogleCloudProvider(AbstractCloudProvider):
                  zone=GCE_DEFAULT_ZONE,
                  network='default',
                  email=GCE_DEFAULT_SERVICE_EMAIL,
-                 storage_path=None):
+                 storage_path=None,
+                 scopes=GCE_DEFAULT_SCOPES):
         self._client_id = gce_client_id
         self._client_secret = gce_client_secret
         self._project_id = gce_project_id
@@ -103,6 +107,7 @@ class GoogleCloudProvider(AbstractCloudProvider):
         self._network = network
         self._email = email
         self._storage_path = storage_path
+        self._scopes = scopes
         self._noauth_local_webserver = noauth_local_webserver
 
         # will be initialized upon first connect
@@ -334,7 +339,7 @@ class GoogleCloudProvider(AbstractCloudProvider):
                 }],
             'serviceAccounts': [
                 {'email': self._email,
-                 'scopes': GCE_DEFAULT_SCOPES
+                 'scopes': self._scopes
                 }],
             # "metadata": {
             #     "kind": "compute#metadata",

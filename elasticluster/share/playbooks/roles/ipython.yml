@@ -50,8 +50,7 @@
         - ipython
 
     - name: Update PIP
-      action: pip name=pip
-                extra_args='--upgrade'
+      command: 'python3 -m pip install -U pip'
 
     # Note: use_mirrors=yes (default) does not work with CentOS 6.3
     # Note: ipython[all] does not seem to work.
@@ -67,6 +66,21 @@
         #- scipy
       # tags:
       #   - ipython
+
+    - name: Get Google Cloud SDK
+      get_url: url=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-115.0.0-linux-x86_64.tar.gz dest=~/
+      tags:
+        - ipython
+
+    - name: Untar GCSDK
+      unarchive: src=~/google-cloud-sdk-115.0.0-linux-x86_64.tar.gz copy=no dest=~/
+      tags:
+        - ipython
+
+    - name: Install Google Cloud SDK
+      command: '~/google-cloud-sdk/install.sh -q'
+      tags:
+        - ipython
 
     - name: Fix for GCE CentOS images
       action: shell find /usr/lib/python2.6/site-packages -name  top_level.txt -exec chmod a+r {} \;
@@ -86,6 +100,9 @@
         - feedparser
         - '-e git+https://github.com/sternshus/arelle#egg=arelle'
         - rdflib
+        - google-api-python-client
+        # - '-U six'
+        # - gcloud
       tags:
         - ipython
 
