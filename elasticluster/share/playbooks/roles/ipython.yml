@@ -106,13 +106,18 @@
       tags:
         - ipython
 
+    - name: Create Deploy user
+      user: name=deployuser
+      tags:
+        - ipython
+
 - name: IPython controller Playbook (standard user operations)
   hosts: ipython_controller:ipython_engine
-  become: False
+  become_user: deployuser
   tasks:
 
     - name: create ipython profile
-      action: shell ipython profile create --parallel creates=~/.ipython/profile_default
+      action: shell ipython profile create --parallel --ipython-dir=~/.ipython creates=~/.ipython/profile_default
       tags:
         - ipython
 
@@ -126,14 +131,6 @@
       tags:
         - ipython
 
-    - name: Create ipython cluster!
-      action: shell ipcluster start
-      when: 'inventory_hostname in groups["ipython_controller"]'
-      # this always fails if the process is already running
-      ignore_errors: yes
-      tags:
-        - ipython
-
   handlers:
     - include: common/handlers/main.yml
 
@@ -141,8 +138,15 @@
   handlers:
     - include: common/handlers/main.yml
   hosts: ipython_controller
-  become: False
+  become_user: deployuser
   tasks:
+
+    - name: Create ipython cluster!
+      action: shell ipcluster start
+      # this always fails if the process is already running
+      ignore_errors: yes
+      tags:
+        - ipython
 
     - name: Create Python 3 kernel
       command: 'python3 -m ipykernel install --user'
@@ -164,14 +168,14 @@
       tags:
         - ipython
 
+    - name: Clone sec-edgar onto machine
+      git: repo=ssh://git@github.com/sternshus/sec-edgar.git
+           dest=~/sec-edgar
+           accept_hostkey=yes
+           key_file=~/.ssh/id_rsa
+
     - name: Kill potential existing jupyter process
       command: pkill jupyter
-      ignore_errors: yes
-      tags:
-        - ipython
-
-    - name: Create notebook directory
-      file: path=~/elasticluster state=directory
       ignore_errors: yes
       tags:
         - ipython
