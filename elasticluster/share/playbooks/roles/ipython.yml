@@ -101,7 +101,6 @@
         - '-e git+https://github.com/sternshus/arelle#egg=arelle'
         - rdflib
         - google-api-python-client
-        - retrying
         # - '-U six'
         # - gcloud
       tags:
