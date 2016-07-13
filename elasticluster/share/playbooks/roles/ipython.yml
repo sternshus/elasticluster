@@ -114,6 +114,8 @@
 - name: IPython controller Playbook (standard user operations)
   hosts: ipython_controller:ipython_engine
   become_user: deployuser
+  tags:
+    -  ipcluster
   tasks:
 
     - name: create ipython profile
@@ -139,7 +141,17 @@
     - include: common/handlers/main.yml
   hosts: ipython_controller
   become_user: deployuser
+  tags:
+    - controllersetup
   tasks:
+
+    - debug: var=groups['ipython_engine']
+
+    - name: Stop existing ipython cluster
+      action: shell ipcluster stop
+      ignore_errors: yes
+      tags:
+        -ipython
 
     - name: Create ipython cluster!
       action: shell ipcluster start
