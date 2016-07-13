@@ -145,14 +145,6 @@
     - controllersetup
   tasks:
 
-    - debug: var=groups['ipython_engine']
-
-    - name: Stop existing ipython cluster
-      action: shell ipcluster stop
-      ignore_errors: yes
-      tags:
-        -ipython
-
     - name: Create ipython cluster!
       action: shell ipcluster start
       # this always fails if the process is already running
